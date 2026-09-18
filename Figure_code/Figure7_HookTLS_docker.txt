@@ -1,0 +1,61 @@
+HookNet-TLS Docker运行记录
+
+运行环境
+
+1. Windows PowerShell
+2. Docker Desktop，使用Linux container
+3. NVIDIA GPU及可供Docker调用的GPU运行环境
+4. HookNet-TLS权重文件：
+   F:\TLS DATA\06-ICI-TLSProfiler\05-HookTLS\weights.h5
+
+权重来源：
+https://zenodo.org/records/10614942/files/weights.h5
+
+推理镜像的基础环境为：
+- tensorflow/tensorflow:2.9.3-gpu
+- ASAP 2.1
+- pathology-whole-slide-data
+- pathology-hooknet
+
+HookNet使用0.5和2.0 micrometer/pixel两个空间尺度。
+
+程序目录
+
+Set-Location -LiteralPath "F:\TLS DATA\06-ICI-TLSProfiler\05-HookTLS"
+
+
+构建两个Docker镜像
+
+1. 构建WSI预处理镜像
+
+docker build -t hooknet-preprocess .\preprocessing
+
+2. 构建HookNet-TLS推理镜像
+
+docker build -t hooknet-tls .
+
+3. 查看镜像
+
+docker image ls hooknet-preprocess
+docker image ls hooknet-tls
+
+
+docker run --rm --gpus all `
+  -e CUDA_CACHE_PATH=/cuda_cache `
+  -e CUDA_CACHE_MAXSIZE=4294967296 `
+  -e CUDA_CACHE_DISABLE=0 `
+  -e TF_CPP_MIN_LOG_LEVEL=0 `
+  -v "F:\TLS DATA\06-ICI-TLSProfiler\05-HookTLS:/home/user/pathology-hooknet-tls" `
+  -v "D:\HookNet_output\sample_001:/input_image" `
+  -v "D:\HookNet_output\sample_001:/input_mask" `
+  -v "D:\HookNet_output\sample_001_inference:/output" `
+  hooknet-tls `
+  python3 -m hooknettls `
+  "hooknettls.default.image_path=/input_image/sample_001.tif" `
+  "hooknettls.default.mask_path=/input_mask/sample_001_mask.tif" `
+  "hooknettls.default.output_folder=/output/images/" `
+  "hooknettls.default.iterator.cpus=1"
+
+
+
+
