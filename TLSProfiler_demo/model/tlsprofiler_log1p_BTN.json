@@ -1,0 +1,17 @@
+{
+  "model": "unpenalized_logistic_regression",
+  "positive_class": "TNC-TLS",
+  "negative_class": "BF-TLS",
+  "input_scale": "percentage_0_to_100",
+  "transform": "log1p",
+  "feature_order": ["B_pct", "T_pct", "Neutrophil_pct"],
+  "intercept": -10.1139943601325,
+  "coefficients": {
+    "B_pct": -0.779152719239116,
+    "T_pct": 3.07528160124321,
+    "Neutrophil_pct": 1.09947346672498
+  },
+  "probability_cutoff": 0.554679582581456,
+  "minimum_operational_polygon_cells": 100,
+  "default_minimum_cells_for_retained_tls": 300
+}
